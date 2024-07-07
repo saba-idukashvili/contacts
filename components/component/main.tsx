@@ -27,10 +27,7 @@ interface Contact {
 }
 
 export function Main() {
-  const [contacts, setContacts] = useState<Contact[]>(() => {
-    const storedContacts = localStorage.getItem("contacts");
-    return storedContacts ? JSON.parse(storedContacts) : [];
-  });
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [newContact, setNewContact] = useState<Contact>({
     id: "",
@@ -44,7 +41,16 @@ export function Main() {
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
 
   useEffect(() => {
-    localStorage.setItem("contacts", JSON.stringify(contacts));
+    if (typeof window !== "undefined") {
+      const storedContacts = localStorage.getItem("contacts");
+      setContacts(storedContacts ? JSON.parse(storedContacts) : []);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("contacts", JSON.stringify(contacts));
+    }
   }, [contacts]);
 
   const handleAddOrUpdateContact = () => {
